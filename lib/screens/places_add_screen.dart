@@ -1,7 +1,11 @@
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widget/imageButton.dart';
+import '../widget/location_input.dart';
+import '../providers/greatPlace.dart';
 
 class AddPlaces extends StatefulWidget {
   static const routes = '/add-place-screen';
@@ -11,6 +15,19 @@ class AddPlaces extends StatefulWidget {
 
 class _AddPlacesState extends State<AddPlaces> {
   final _textController = TextEditingController();
+  File _selectedImage;
+
+  void selectedImageFn(File imageFile)//this function is passed to the ImageInput widget and a constructor is provided to receive this function
+  {
+    _selectedImage = imageFile;
+  }
+  void _save(){
+    if(_textController.text.isEmpty||_selectedImage==null){
+      return;
+    }
+    Provider.of<GreatPlaces>(context,listen: false).addPlace(_textController.text,_selectedImage);
+    Navigator.of(context).pop();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,15 +53,16 @@ class _AddPlacesState extends State<AddPlaces> {
             SizedBox(height: 10,),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: ImageInput(),
+              child: ImageInput(selectedImageFn),
             ),
-            
+            SizedBox(height:10),
+            LocationInput(),
           ],),
         )),
         RaisedButton.icon(
           elevation: 0,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          onPressed: (){},
+          onPressed: _save,
           color: Colors.red[300],
            icon: Icon(Icons.add),
             label: Text('Add'),
